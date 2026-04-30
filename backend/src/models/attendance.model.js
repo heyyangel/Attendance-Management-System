@@ -53,11 +53,13 @@ const attendanceSchema = new Schema(
         },
         punchInLocation: {
             latitude: { type: Number, required: true },
-            longitude: { type: Number, required: true }
+            longitude: { type: Number, required: true },
+            locationName: { type: String, trim: true }
         },
         punchOutLocation: {
             latitude: { type: Number },
-            longitude: { type: Number }
+            longitude: { type: Number },
+            locationName: { type: String, trim: true }
         }
     },
     {

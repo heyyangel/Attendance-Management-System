@@ -261,7 +261,7 @@ const Dashboard = () => {
                         {record.workingHours || '0.0'}h
                       </td>
                       <td className="p-4 text-center text-xs text-slate-400">
-                        📍 GPS
+                        📍 {record.punchInLocation?.locationName || 'GPS'}
                       </td>
                       <td className="p-4 text-center">
                         <span className={`inline-block px-3 py-1 rounded-full text-[0.65rem] font-bold uppercase tracking-wider border ${

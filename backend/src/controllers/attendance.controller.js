@@ -38,8 +38,8 @@ export const punchIn = catchAsync(async (req, res) => {
         throw new ApiError(400, "You have already punched in today");
     }
 
-    const { latitude, longitude, image } = req.body;
-
+    const { latitude, longitude, locationName, image } = req.body;
+    
     if (!latitude || !longitude) {
         throw new ApiError(400, "Location (latitude, longitude) is required");
     }
@@ -55,7 +55,8 @@ export const punchIn = catchAsync(async (req, res) => {
         status: "PRESENT",
         punchInLocation: {
             latitude,
-            longitude
+            longitude,
+            locationName
         },
         punchInImage: image
     });
@@ -81,7 +82,7 @@ export const punchOut = catchAsync(async (req, res) => {
         throw new ApiError(400, "You have already punched out today.");
     }
 
-    const { latitude, longitude, image } = req.body;
+    const { latitude, longitude, locationName, image } = req.body;
 
     if (!latitude || !longitude) {
         throw new ApiError(400, "Location (latitude, longitude) is required to punch out");
@@ -92,7 +93,7 @@ export const punchOut = catchAsync(async (req, res) => {
     }
 
     record.punchOutTime = new Date();
-    record.punchOutLocation = { latitude, longitude };
+    record.punchOutLocation = { latitude, longitude, locationName };
     record.punchOutImage = image;
     
     const diffMs = record.punchOutTime - record.punchInTime;

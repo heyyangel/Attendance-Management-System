@@ -77,7 +77,12 @@ const PunchBox = () => {
     const imageBase64 = captureImage();
     if (!imageBase64) return setError("Failed to capture selfie.");
 
-    const payload = { latitude: location.latitude, longitude: location.longitude, image: imageBase64 };
+    const payload = { 
+      latitude: location.latitude, 
+      longitude: location.longitude, 
+      locationName: locationName, 
+      image: imageBase64 
+    };
     try {
       if (type === 'IN') await punchIn(payload).unwrap();
       else await punchOut(payload).unwrap();
@@ -268,6 +273,9 @@ const EmployeeDashboard = () => {
                               <div className="text-xs text-slate-500">{new Date(record.date).toLocaleDateString()}</div>
                             </div>
                           </div>
+                        </td>
+                        <td className="p-4 text-center text-xs text-slate-400">
+                          📍 {record.punchInLocation?.locationName || 'GPS Location'}
                         </td>
                         <td className="p-4 text-sm text-slate-300 font-medium">
                           {new Date(record.punchInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
