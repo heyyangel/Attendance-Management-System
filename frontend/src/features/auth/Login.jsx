@@ -21,7 +21,12 @@ const Login = () => {
     setSuccess('');
     try {
       if (isLoginView) {
-        await login({ email: formData.email, password: formData.password }).unwrap();
+        // Try to determine if it's an email or employeeId
+        const loginData = formData.email.includes('@') 
+          ? { email: formData.email, password: formData.password }
+          : { employeeId: formData.email, password: formData.password };
+        
+        await login(loginData).unwrap();
       } else {
         await signup(formData).unwrap();
         setSuccess('Account created! You can now sign in.');
@@ -29,7 +34,11 @@ const Login = () => {
         setFormData({ ...formData, password: '' });
       }
     } catch (err) {
-      setError(err?.data?.message || 'Authentication failed');
+      if (err.status === 'FETCH_ERROR') {
+        setError('Server connection failed. Please ensure the backend is running.');
+      } else {
+        setError(err?.data?.message || 'Authentication failed');
+      }
     }
   };
 
