@@ -58,17 +58,15 @@ export const signupUser = catchAsync(async (req, res) => {
 export const loginUser = catchAsync(async (req, res) => {
     const { email, password, employeeId } = req.body;
 
-    if (!email && !employeeId) {
+    const query = {};
+    if (email) query.email = email;
+    if (employeeId) query.employeeId = employeeId;
+
+    if (Object.keys(query).length === 0) {
         throw new ApiError(400, "Email or Employee ID is required");
     }
 
-    if (!password) {
-        throw new ApiError(400, "Password is required");
-    }
-
-    const user = await User.findOne({
-        $or: [{ email }, { employeeId }]
-    });
+    const user = await User.findOne({ $or: [query] }).select("+password");
 
     if (!user) {
         throw new ApiError(404, "User does not exist");
@@ -76,6 +74,10 @@ export const loginUser = catchAsync(async (req, res) => {
 
     if (!user.isActive) {
         throw new ApiError(403, "Your account has been deactivated. Please contact HR.");
+    }
+
+    if (!password || !user.password) {
+        throw new ApiError(401, "Invalid user credentials");
     }
 
     const isPasswordValid = await user.isPasswordCorrect(password);
