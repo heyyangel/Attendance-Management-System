@@ -16,6 +16,10 @@ export const getEmployeeDashboard = catchAsync(async (req, res) => {
         .populate("attendance", "date")
         .sort({ createdAt: -1 })
         .limit(5);
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
     const hoursAggregation = await Attendance.aggregate([
         { 
             $match: { 
