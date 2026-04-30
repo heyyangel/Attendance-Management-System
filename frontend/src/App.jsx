@@ -7,7 +7,7 @@ import Dashboard from './features/dashboard/Dashboard';
 import ReportTable from './features/report/ReportTable';
 import Login from './features/auth/Login';
 import { logoutLocally } from './features/auth/authSlice';
-import { useLogoutMutation, useGetUsersQuery } from './services/authApi';
+import { useLogoutMutation, useGetUsersQuery, useSwitchRoleMutation } from './services/authApi';
 import { LogOut } from 'lucide-react';
 import UserManagement from './features/auth/UserManagement';
 
@@ -20,6 +20,7 @@ function App() {
   const [activeTab, setActiveTab] = useState(isManagerOrAdmin ? 'DASHBOARD' : 'PUNCH');
 
   const [logoutApi] = useLogoutMutation();
+  const [switchRole, { isLoading: isSwitching }] = useSwitchRoleMutation();
 
   const handleLogout = async () => {
     try {
@@ -28,6 +29,16 @@ function App() {
       console.error(e);
     } finally {
       dispatch(logoutLocally());
+    }
+  };
+
+  const handleSwitchRole = async () => {
+    const roles = ['EMPLOYEE', 'MANAGER', 'ADMIN'];
+    const nextRole = roles[(roles.indexOf(userRole) + 1) % roles.length];
+    try {
+      await switchRole(nextRole).unwrap();
+    } catch (err) {
+      console.error("Failed to switch role:", err);
     }
   };
 
@@ -66,6 +77,15 @@ function App() {
 
           {/* User Profile Badge */}
           <div className="absolute top-5 right-5 z-30 flex items-center gap-3 bg-dark-card/80 p-1.5 pr-4 rounded-xl border border-white/10 backdrop-blur-md shadow-xl">
+            <button 
+              onClick={handleSwitchRole}
+              disabled={isSwitching}
+              className="ml-2 p-2 rounded-lg bg-white/5 hover:bg-white/10 text-[0.6rem] font-bold text-slate-500 hover:text-primary transition-all border border-white/5 uppercase"
+              title="Debug: Switch Role"
+            >
+              {isSwitching ? '...' : 'Switch'}
+            </button>
+
             <div className="flex flex-col items-end px-2">
               <span className="text-sm font-semibold text-white leading-tight">{user.name}</span>
               <span className={`mt-0.5 px-2 py-0.5 rounded-full text-[0.65rem] font-bold uppercase tracking-wider border ${getRoleColor(userRole)}`}>
